@@ -77,6 +77,11 @@ body {
 .hidden {
     display: none;
 }
+.total {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
 
 @media (min-width: 600px) {
     .entry {
