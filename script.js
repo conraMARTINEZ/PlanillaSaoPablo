@@ -2,6 +2,7 @@ const MAX_VISIBLE_ENTRIES = 3;
 let allEntries = [];
 let showingAll = false;
 let totalAmount = 0;
+let pdfFileName = "reporte";
 
 document.getElementById("addButton").addEventListener("click", function() {
     const nameInput = document.getElementById("name");
@@ -27,7 +28,7 @@ document.getElementById("addDateButton").addEventListener("click", function() {
 
     if (date) {
         addEntry(`Fecha: ${date}`);
-
+        pdfFileName = date;  // Actualizamos el nombre del archivo PDF con la fecha ingresada
         dateInput.value = "";
     } else {
         alert("Por favor selecciona una fecha.");
@@ -38,14 +39,16 @@ document.getElementById("generatePDFButton").addEventListener("click", function(
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    let lineHeight = 10;
     allEntries.forEach((entry, index) => {
         const entryText = entry.querySelector('span').textContent;
         if (!entryText.startsWith('Fecha:')) {
-            doc.text(entryText, 10, 10 + (10 * index));
+            doc.text(entryText, 10, lineHeight);
+            lineHeight += 10;
         }
     });
 
-    doc.save('reporte.pdf');
+    doc.save(`${pdfFileName}.pdf`);
 });
 
 document.getElementById("toggleButton").addEventListener("click", function() {
@@ -87,6 +90,7 @@ function addEntry(text) {
                 entryText.textContent = `${newNameOrDate} - $${newAmount}`;
             } else {
                 entryText.textContent = `Fecha: ${newNameOrDate}`;
+                pdfFileName = newNameOrDate; // Actualizamos el nombre del archivo PDF si se edita la fecha
             }
         } else {
             alert("Por favor llena todos los campos.");
