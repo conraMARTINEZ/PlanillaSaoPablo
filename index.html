@@ -25,8 +25,13 @@
         <button class="button button-secondary" id="addDateButton">Agregar Fecha</button>
         <button class="button button-secondary" id="generatePDFButton">Generar PDF</button>
 
+        <div class="form-group total">
+            <label>Importe Total:</label>
+            <span id="totalAmount">0</span>
+        </div>
+
         <div id="entries"></div>
-        <button class="button button-secondary" id="toggleButton" style="display:none;">Mostrar más</button>
+        <button class="button button-secondary" id="toggleButton" style="display: none;">Mostrar más</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
