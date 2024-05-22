@@ -1,16 +1,18 @@
 const MAX_VISIBLE_ENTRIES = 3;
 let allEntries = [];
 let showingAll = false;
+let totalAmount = 0;
 
 document.getElementById("addButton").addEventListener("click", function() {
     const nameInput = document.getElementById("name");
     const amountInput = document.getElementById("amount");
 
     const name = nameInput.value;
-    const amount = amountInput.value;
+    const amount = parseFloat(amountInput.value);
 
-    if (name && amount) {
+    if (name && !isNaN(amount)) {
         addEntry(`${name} - $${amount}`);
+        updateTotalAmount(amount);
 
         nameInput.value = "";
         amountInput.value = "";
@@ -37,7 +39,10 @@ document.getElementById("generatePDFButton").addEventListener("click", function(
     const doc = new jsPDF();
 
     allEntries.forEach((entry, index) => {
-        doc.text(entry.textContent, 10, 10 + (10 * index));
+        const entryText = entry.querySelector('span').textContent;
+        if (!entryText.startsWith('Fecha:')) {
+            doc.text(entryText, 10, 10 + (10 * index));
+        }
     });
 
     doc.save('reporte.pdf');
@@ -59,6 +64,10 @@ function addEntry(text) {
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Eliminar";
     deleteButton.addEventListener("click", function() {
+        const amountToRemove = parseFloat(entryText.textContent.split("$")[1]);
+        if (!isNaN(amountToRemove)) {
+            updateTotalAmount(-amountToRemove);
+        }
         allEntries = allEntries.filter(e => e !== entryDiv);
         entryDiv.remove();
         updateEntries();
@@ -68,10 +77,17 @@ function addEntry(text) {
     editButton.textContent = "Editar";
     editButton.classList.add("edit-button");
     editButton.addEventListener("click", function() {
-        const newName = prompt("Nuevo nombre o fecha:", text.split(" - $")[0]);
-        const newAmount = text.includes("- $") ? prompt("Nuevo importe:", text.split(" - $")[1]) : null;
-        if (newName && (newAmount || newAmount === null)) {
-            entryText.textContent = newAmount ? `${newName} - $${newAmount}` : `Fecha: ${newName}`;
+        const currentText = entryText.textContent;
+        const newNameOrDate = prompt("Nuevo nombre o fecha:", currentText.split(" - $")[0]);
+        const newAmount = currentText.includes("- $") ? prompt("Nuevo importe:", currentText.split(" - $")[1]) : null;
+        if (newNameOrDate && (newAmount || newAmount === null)) {
+            if (newAmount) {
+                const oldAmount = parseFloat(currentText.split(" - $")[1]);
+                updateTotalAmount(parseFloat(newAmount) - oldAmount);
+                entryText.textContent = `${newNameOrDate} - $${newAmount}`;
+            } else {
+                entryText.textContent = `Fecha: ${newNameOrDate}`;
+            }
         } else {
             alert("Por favor llena todos los campos.");
         }
@@ -97,4 +113,9 @@ function updateEntries() {
         entriesDiv.appendChild(entry);
     });
     document.getElementById("toggleButton").style.display = allEntries.length > MAX_VISIBLE_ENTRIES ? "block" : "none";
+}
+
+function updateTotalAmount(amount) {
+    totalAmount += amount;
+    document.getElementById("totalAmount").textContent = totalAmount.toFixed(2);
 }
