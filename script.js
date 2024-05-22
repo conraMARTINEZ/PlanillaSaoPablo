@@ -1,4 +1,4 @@
-const MAX_VISIBLE_ENTRIES = 5;
+const MAX_VISIBLE_ENTRIES = 3;
 let allEntries = [];
 let showingAll = false;
 
